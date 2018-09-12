@@ -48,9 +48,7 @@ defmodule HttpServer.JsonApiHandler do
 	"""
 	def handle_get_request("/fetch_results", query, headers, state) do
 		season = String.to_integer(query["season"])
-		IO.inspect season
 		tournament = query["tournament"]
-		IO.inspect tournament
 		dataset = EtsTable.select_by_season_and_tournament(season, tournament)
 		sorted_dataset = Enum.sort(dataset, fn (x, y) -> 
 			{ id, _home_team, _away_team, date, _tournament, _ftag, _fthg, _ftr, _htag, _hthg, _htr, _season } = x
@@ -82,6 +80,12 @@ defmodule HttpServer.JsonApiHandler do
 				"season" => season
 			}
         end)
+        response_list = case response_list do
+        	nil ->
+        		"There is no results for given tournament-season pair. Get the list of leagues with availible results using /list query to api"
+            _ ->
+            	response_list
+        end
         response = JSX.encode!(%{"result" => response_list})
         #origin header is needed for comfortable use of this api in front end 
         origin = case headers["origin"] do
@@ -90,13 +94,12 @@ defmodule HttpServer.JsonApiHandler do
 			_ ->
 				%{"Access-Control-Allow-Origin" => headers["origin"]}
 		end
-		IO.inspect state
 		{200, Map.merge(origin, @headers), response, state}
 	end
-	def handle_get_request("/"<>unknown_method, query, h, s) do
+	def handle_get_request("/"<>unknown_method, _query, _h, s) do
 		{404, %{}, "Method "<>unknown_method<>"doesn't exist in our json api.", s}
 	end
-	def handle_get_request(empty, query, h, s) do
+	def handle_get_request(_empty, _query, _h, s) do
 		{404, %{}, "Please, choose the method.", s}
 	end
 end

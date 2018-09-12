@@ -1,9 +1,12 @@
 defmodule Test do
-    use Application
+    @moduledoc """
+        Модуль с которого начинается запуск приложения
+    """
 
-    #Test.csv_init("data.csv")
-    #init_query ="""CREATE TABLE stats (
-    #column_name TYPE column_constraint;"""
+    use Application
+    @doc """
+     csv_init(path) - function created for upload data from given csv file and upload it to ets table using EtsTable.start_upload(stats) function.
+    """
     def csv_init(path) do
         stream = File.stream!(path) |> CSV.decode
         data = Enum.to_list(stream.enum)
@@ -42,7 +45,12 @@ defmodule Test do
         end)
         EtsTable.start_upload(stats)
     end 
-
+    @doc """
+     start(_type, _args) - function that is запускаеться сразу после запуска приложения и выполняет слудеющие действия: 
+     Создаёт ets таблицы для хранения данных используемых в будущем для работы api EtsTable.create_table()
+     Read data from Test.csv_init("data.csv") and upload it to ets using  Test.csv_init("data.csv") function
+     Запускает дочерним процессом приложения - http server, устойчивая работа которого обеспечена супервизором supervisor(HttpServer, [pool_ip, port]).
+    """
     def start(_type, _args) do
       import Supervisor.Spec, warn: false
 

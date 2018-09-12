@@ -25,7 +25,6 @@ defmodule Test.MixProject do
       {:stargate, git: "https://github.com/vans163/stargate.git"},
       {:exjsx, "~> 4.0.0"},
       {:httpoison, "~> 1.0"},
-      {:postgrex, "~> 0.13.3"},
       {:csv, "~> 2.0.0"},
       {:distillery, "~> 2.0"},
       {:exprotobuf, github: "bitwalker/exprotobuf"}
