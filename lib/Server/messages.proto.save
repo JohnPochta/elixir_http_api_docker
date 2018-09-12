@@ -1,0 +1,27 @@
+message ListMsg {
+    repeated SeasonPair list = 1;
+}
+
+message FetchResultsMsg{
+    repeated MatchResult results = 1;
+}
+
+message SeasonPair {
+    required string tournament = 1;
+    required int32 season = 2;
+}
+\
+message MatchResult {
+    required int32 = 1
+    required string  = 2;
+    required string  = 3;
+    required string  = 4;
+    required string  = 5;
+    required int32  = 6;
+    required int32  = 7;
+    required string  = 8;
+    required int32  = 9;
+    required int32  = 10;
+    required string  = 11;
+    required int32  = 12;
+}
