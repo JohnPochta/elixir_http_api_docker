@@ -8,6 +8,7 @@ The API data is given in csv format , but i've decided to start uploading of the
 For deployment of this Http Api Server you should follow next steps:
 ```
 git clone https://github.com/JohnPochta/elixir_http_api_docker
+cd elixir_http_api_docker
 docker build -t image_name .
 docker run -p port:4000 -t image_name
 #example run -p 8080:4000 -t image_name
