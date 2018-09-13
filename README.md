@@ -55,3 +55,4 @@ Examples:
 		Response Body:
 			0a3608950d12074275726e6c65791a075377.....
 ```
+P.S.: It was my first experience with docker, so there is could be some problems, so please be gentle.
