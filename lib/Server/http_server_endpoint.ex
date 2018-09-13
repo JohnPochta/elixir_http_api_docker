@@ -1,7 +1,7 @@
 defmodule HttpServer.EndPoint do
 	@moduledoc """
-	  HttpServer.EndPoint module служит в качестве роутера, который исполняет роль middleware и в зависимости от части запроса следующей за портом - определяет,
-	  which format of data want to get user which create the request - в зависимости от чего данное миддлваре определяет соотвествующий handler для обработки запроса
+	  HttpServer.EndPoint module created like an router, which plays role of middleware and with help of query part next to the port - determine,
+	  which format of data user wants to get. Middleware determine particular handler for processing requests in determined earlier implementation of API (json or protobuf) .
 	"""
 	@headers %{
       "Access-Control-Allow-Methods" => "GET",
@@ -9,17 +9,17 @@ defmodule HttpServer.EndPoint do
       "Access-Control-Allow-Credentials" => "true"
 	}
 	@doc """
-		http/6 - function, which handles the http requests for Stargate HttpServer called http by default. This function is универсальная для всех типов запросов, но тем не менее она не только очень гибкая, но и очень грамотно спроектирована, что развязывает руки.
+		http/6 - function, which handles the http requests for Stargate HttpServer is calling http by default. This function is universal for all types of requests and it's very flexible and well proected by Stargate Developer. It's give an opportunity to use many possible tricks when you need.
 		
 		In some implementations of this functions some of arguments can be ignored specially cuz of there is no need for them
 		## Parameters
 
 		    - first argument: Atom, which define an type of received http request
-		    - second argument: Url of request, which needs for pattren matching of needed handler function. "url_start"<>params - is a trick for выделение неинтересующей нас на данном этапе части url, но которая может пригодится нам в дальнейшем
+		    - second argument: Url of request, which needs for pattren matching of needed handler function. "url_start"<>params - it's a trick for matching the part after url part that url should to match to be handled by this function.
 		    - querystring: it's a map which represents the querystring of handling request in "key" => value form
 		    - headers: it's a map which represents the headers of handling request in "key" => value form
-		    - body: it's an body of http request, that is no needed fand can be ignored just like  _body for types which don't contain a body
-		    - state: it's an argument which пробрасывается, for needs of http server library and contains of map with to default keys: host and socket, where host - it's server ip and socket it's address обслуживающего данный запрос socket-a 
+		    - body: it's an body of http request, that is no needed and can be ignored just like  _body for request types, which don't contain a body
+		    - state: it's an argument which thrown there for needs of http server library and contains of map with two default keys: host and socket, where host - it's server ip and socket address 
 			
 
 	"""

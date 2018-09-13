@@ -1,8 +1,8 @@
 defmodule HttpServer.JsonApiHandler do
 	@moduledoc """
-	  HttpServer.JsonApiHandler module служит for handling requests for JSON version of api.
+	  HttpServer.JsonApiHandler module made for handling requests for JSON version of api.
 	  The idea is that public functions in this module should have the common names defined for each possible types of requests 
-	  and for every request предусмотрено particular function, which determines with help of pattern matching - one of the main beautiful things in Elixir.
+	  and for every request envisaged particular function, which determines with help of pattern matching - one of the main beautiful things in Elixir.
 	"""
 	@headers %{
       "Access-Control-Allow-Methods" => "GET",
@@ -20,7 +20,7 @@ defmodule HttpServer.JsonApiHandler do
 		    - first argument: String that consists of string beetween "/json_api" and querystring in user request
 		    - query: it's a map which represents the querystring of handling request in "key" => value form
 		    - headers: it's a map which represents the headers of handling request in "key" => value form
-		    - state: it's an argument which пробрасывается, for needs of http server library and contains of map with to default keys: host and socket, where host - it's server ip and socket it's address обслуживающего данный запрос socket-a 
+		    - state: it's an argument which throws for need of http server library and contains of map with to default keys: host and socket, where host - it's server ip and socket address
 
 			
 
@@ -30,7 +30,7 @@ defmodule HttpServer.JsonApiHandler do
 	"""
 	def handle_get_request("/list", _query, headers, state) do
 		list = EtsTable.select_pairs_list
-		response_list = Enum.map(list, fn({tournament, season})->
+		response_list = Enum.map(list, fn({{tournament, season}})->
 			%{"tournament" => tournament, "season" => season}
        end)
 		response = JSX.encode!(%{"list" => response_list})
@@ -81,7 +81,7 @@ defmodule HttpServer.JsonApiHandler do
 			}
         end)
         response_list = case response_list do
-        	nil ->
+            [] ->
         		"There is no results for given tournament-season pair. Get the list of leagues with availible results using /list query to api"
             _ ->
             	response_list

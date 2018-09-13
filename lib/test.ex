@@ -1,6 +1,6 @@
 defmodule Test do
     @moduledoc """
-        Модуль с которого начинается запуск приложения
+        The module from which the application starts
     """
 
     use Application
@@ -46,10 +46,10 @@ defmodule Test do
         EtsTable.start_upload(stats)
     end 
     @doc """
-     start(_type, _args) - function that is запускаеться сразу после запуска приложения и выполняет слудеющие действия: 
-     Создаёт ets таблицы для хранения данных используемых в будущем для работы api EtsTable.create_table()
-     Read data from Test.csv_init("data.csv") and upload it to ets using  Test.csv_init("data.csv") function
-     Запускает дочерним процессом приложения - http server, устойчивая работа которого обеспечена супервизором supervisor(HttpServer, [pool_ip, port]).
+     start(_type, _args) - function that's called just after start of the application and do next things: 
+     EtsTable.create_table() - Creates ets tables for storage data that will used in the future for handling API calls 
+     Test.csv_init("data.csv") - Reads data from Test.csv_init("data.csv") and upload it to ets using 
+     Starts the application with a child process http server, the stable work of which is provided by the supervisor supervisor(HttpServer, [pool_ip, port]).
     """
     def start(_type, _args) do
       import Supervisor.Spec, warn: false

@@ -7,17 +7,11 @@ RUN export MIX_ENV=prod && \
     mix release.init && \
     MIX_ENV=prod mix release
 
-RUN ls _build
-
-RUN ls ../
-
 RUN cp _build/prod/rel/test/releases/0.1.0/test.tar.gz /opt/app/
 RUN cd /opt/app/
-RUN ls
 RUN tar -xzf test.tar.gz
-RUN ls
 
-EXPOSE 8080
+EXPOSE 4000
 
 ENTRYPOINT ["/opt/app/bin/test"]
 CMD ["foreground"]

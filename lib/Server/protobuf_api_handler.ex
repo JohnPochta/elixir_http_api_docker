@@ -9,9 +9,9 @@ end
 
 defmodule HttpServer.ProtobufApiHandler do
 	@moduledoc """
-	  HttpServer.ProtobufApiHandler module служит for handling requests for protocol buffers version of api.
+	  HttpServer.ProtobufApiHandler module was made for handling requests for protocol buffers version of api.
 	  The idea is that public functions in this module should have the common names defined for each possible types of requests 
-	  and for every request предусмотрено particular function, which determines with help of pattern matching - one of the main beautiful things in Elixir.
+	  and for every request envisaged particular function, which determines with help of pattern matching - one of the main beautiful things in Elixir.
 	"""
 	@headers %{
       "Access-Control-Allow-Methods" => "GET",
@@ -28,7 +28,7 @@ defmodule HttpServer.ProtobufApiHandler do
 		    - first argument: String that consist of string beetween "/protobuf_api" and querystring in user request
 		    - query: it's a map which represents the querystring of handling request in "key" => value form
 		    - headers: it's a map which represents the headers of handling request in "key" => value form
-		    - state: it's an argument which пробрасывается, for needs of http server library and contains of map with to default keys: host and socket, where host - it's server ip and socket it's address обслуживающего данный запрос socket-a 
+		    - state: it's an argument which thrown, for needs of http server library and contains of map with to default keys: host and socket, where host - it's server ip and socket address 
 			
 
 	"""
@@ -38,11 +38,10 @@ defmodule HttpServer.ProtobufApiHandler do
 	def handle_get_request("/list", _query, headers, state) do
 		list = EtsTable.select_pairs_list
 		response_list = Enum.map(list, fn(x)->
-			{tournament, season} = x
+			{{tournament, season}} = x
 			Protobufs.SeasonPair.new(%{tournament: tournament, season: season})
         end)
 		msg = Protobufs.ListMsg.new(list: response_list)
-		IO.inspect Protobufs.ListMsg.decode(Protobufs.ListMsg.encode(msg))
 		#origin header is needed for comfortable use of this api in front end 
         origin = case headers["origin"] do
 			nil ->
@@ -50,7 +49,7 @@ defmodule HttpServer.ProtobufApiHandler do
 			_ ->
 				%{"Access-Control-Allow-Origin" => headers["origin"]}
 		end
-		{200, Map.merge(origin, @headers), Protobufs.ListMsg.encode(msg), state}
+		{200, Map.merge(origin, @headers), Base.encode16(Protobufs.ListMsg.encode(msg), case: :lower), state}
 	end
 	@doc """
 		handle_get_request("/fetch_results", query, _headers, state) handles the GET "/fetch_results" request and send the match results for given using querystring tournament-season pair 
@@ -75,27 +74,28 @@ defmodule HttpServer.ProtobufApiHandler do
             {year, month, day} = Date.to_erl(date)
             date = Integer.to_string(day)<>"/"<>Integer.to_string(month)<>"/"<>Integer.to_string(year)
             Protobufs.MatchResult.new(%{
-                                id: id,
-                                home_team: home_team,
-                                away_team: away_team,
-                                date: date,
-                                tournament: tournament,
-                                ftag: String.to_integer(ftag),
-                                fthg: String.to_integer(fthg),
-                                ftr: ftr,
-                                htag: String.to_integer(htag),
-                                hthg: String.to_integer(hthg),
-                                htr: htr,
-                                season: season
+                id: id,
+                home_team: home_team,
+                away_team: away_team,
+                date: date,
+                tournament: tournament,
+                ftag: String.to_integer(ftag),
+                fthg: String.to_integer(fthg),
+                ftr: ftr,
+                htag: String.to_integer(htag),
+                hthg: String.to_integer(hthg),
+                htr: htr,
+                season: season
             })
         end)
-        response_list = case response_list do
-        	nil ->
-        		"There is no results for given tournament-season pair. Get the list of leagues with availible results using /list query to api"
-            _ ->
-            	response_list
-        end
-		msg = Protobufs.FetchResultsMsg.new(results: response_list)
+		msg = case response_list do
+			[] ->
+				response = Protobufs.FetchResultsMsgError.new(reason: "There is no results for given tournament-season pair. Get the list of leagues with availible results using /list query to api")
+				Base.encode16(Protobufs.FetchResultsMsgError.encode(response), case: :lower)
+			_ ->
+				response = Protobufs.FetchResultsMsg.new(results: response_list)
+				Base.encode16(Protobufs.FetchResultsMsg.encode(response), case: :lower)
+		end
 		#origin header is needed for comfortable use of this api in front end 
         origin = case headers["origin"] do
 			nil ->
@@ -103,7 +103,7 @@ defmodule HttpServer.ProtobufApiHandler do
 			_ ->
 				%{"Access-Control-Allow-Origin" => headers["origin"]}
 		end
-		{200, Map.merge(origin, @headers), Protobufs.FetchResultsMsg.encode(msg), state}
+		{200, Map.merge(origin, @headers), msg , state}
 	end
 	def handle_get_request("/"<>unknown_method, _query, _h, s) do
 		{404, %{}, "Method "<>unknown_method<>"doesn't exist in our json api.", s}

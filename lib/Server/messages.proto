@@ -25,3 +25,6 @@ message MatchResult {
     required string htr = 11;
     required int32 season = 12;
 }
+message FetchResultsMsgError {
+    required string reason = 1;
+}
