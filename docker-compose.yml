@@ -1,8 +1,8 @@
 version: '3'
 
 services:
-  awesome:
-   image: awesome
+  image_name:
+   image: image_name
    ports:
      - 4000
    environment:
@@ -22,13 +22,13 @@ services:
   proxy:
     image: dockercloud/haproxy
     depends_on:
-      - awesome
+      - image_name
     environment:
       - BALANCE=leastconn
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     ports:
-      - 11000:11000
+      - 80:80
     networks:
       - web
 networks:
