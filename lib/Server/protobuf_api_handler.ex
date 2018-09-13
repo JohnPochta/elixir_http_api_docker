@@ -36,6 +36,7 @@ defmodule HttpServer.ProtobufApiHandler do
 		handle_get_request("/list", _query, headers, state) handles the GET "/list" request and send the list of available in API tournament-season pairs
 	"""
 	def handle_get_request("/list", _query, headers, state) do
+		IO.inspect "There is /protobuf_api/list request"
 		list = EtsTable.select_pairs_list
 		response_list = Enum.map(list, fn(x)->
 			{{tournament, season}} = x
@@ -55,7 +56,9 @@ defmodule HttpServer.ProtobufApiHandler do
 		handle_get_request("/fetch_results", query, _headers, state) handles the GET "/fetch_results" request and send the match results for given using querystring tournament-season pair 
 	"""
 	def handle_get_request("/fetch_results", query, headers, state) do
-		season = String.to_integer(query["season"])
+		IO.inspect "There is /protobuf_api/fetch_results with querystring :"
+		IO.inspect query
+		season = if ( query["season"] == nil ), do: nil , else: String.to_integer(query["season"])
 		tournament = query["tournament"]
 		dataset = EtsTable.select_by_season_and_tournament(season, tournament)
 		sorted_dataset = Enum.sort(dataset, fn (x, y) -> 
